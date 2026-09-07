@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f172a">
+<title>JajanFlow — Weekly Money Planner</title>
+<style>
+:root{
+  --bg:#f6f8fc; --card:#fff; --text:#172033; --muted:#718096; --line:#e8edf5;
+  --primary:#5b5ce2; --primary2:#7c83ff; --green:#18a66b; --orange:#f59e0b;
+  --red:#ef5350; --shadow:0 14px 40px rgba(30,41,75,.08); --radius:22px;
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit} button{cursor:pointer;border:0}
+.app{max-width:1180px;margin:auto;padding:22px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:850;font-size:21px}
+.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--primary2));display:grid;place-items:center;color:white;font-size:21px;box-shadow:0 8px 20px rgba(91,92,226,.25)}
+.nav-actions{display:flex;gap:9px}
+.account{display:flex;align-items:center;gap:9px}.account-name{font-size:13px;color:var(--muted);font-weight:700}.danger{background:#fff0f0;border:1px solid #ffd5d5;padding:10px 13px;border-radius:13px;color:#b83232}
+.icon-btn,.ghost{background:#fff;border:1px solid var(--line);padding:10px 13px;border-radius:13px;color:var(--text)}
+.hero{background:linear-gradient(135deg,#151b3d,#31358b 58%,#6972ff);color:#fff;border-radius:28px;padding:30px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.07);right:-70px;top:-90px}
+.hero small{opacity:.75}.hero h1{font-size:clamp(28px,4vw,44px);margin:7px 0 8px;letter-spacing:-1.5px}.hero p{max-width:650px;margin:0;color:#dfe3ff;line-height:1.6}
+.hero-row{display:flex;justify-content:space-between;align-items:end;gap:20px;position:relative;z-index:1}
+.total{margin-top:24px;font-size:34px;font-weight:850}.total span{font-size:14px;font-weight:500;opacity:.7}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-top:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.col-8{grid-column:span 8}.col-4{grid-column:span 4}.col-6{grid-column:span 6}.col-12{grid-column:span 12}
+.card-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.card-title h2{font-size:18px;margin:0}.muted{color:var(--muted);font-size:13px}
+.bars{display:grid;gap:13px}.bar-head{display:flex;justify-content:space-between;font-size:14px;margin-bottom:7px}.bar{height:10px;background:#eef1f7;border-radius:99px;overflow:hidden}.fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--primary),var(--primary2));transition:.35s}
+.alloc{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.alloc-item{padding:14px;background:#f8f9fd;border:1px solid var(--line);border-radius:16px}.alloc-item b{display:block;font-size:18px;margin-top:4px}
+form{display:grid;gap:10px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{font-size:12px;font-weight:700;color:#5d6679;display:grid;gap:6px}input,select{width:100%;border:1px solid var(--line);background:#fafbfe;border-radius:13px;padding:12px;outline:none;color:var(--text)}input:focus,select:focus{border-color:#a8adff;box-shadow:0 0 0 3px rgba(91,92,226,.1)}
+.primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border-radius:13px;padding:12px 16px;font-weight:800}
+.secondary{background:#eef0ff;color:#4548bd;border-radius:13px;padding:11px 14px;font-weight:750}
+.goal{display:flex;align-items:center;gap:14px}.goal-ring{width:82px;height:82px;border-radius:50%;background:conic-gradient(var(--green) var(--p),#edf1f5 0);display:grid;place-items:center;flex:0 0 auto}.goal-ring:after{content:attr(data-p);width:62px;height:62px;border-radius:50%;background:#fff;display:grid;place-items:center;font-weight:850;font-size:14px}
+.goal h3{margin:0 0 5px}.goal p{margin:0;color:var(--muted);font-size:13px}
+.transaction{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}.transaction:last-child{border-bottom:0}.tx-left{display:flex;align-items:center;gap:11px}.tx-icon{width:38px;height:38px;border-radius:12px;background:#f0f2ff;display:grid;place-items:center}.tx-name{font-weight:750;font-size:14px}.tx-date{font-size:11px;color:var(--muted);margin-top:2px}.amount{font-weight:850}.expense{color:var(--red)}.income{color:var(--green)}
+.empty{text-align:center;color:var(--muted);padding:24px 8px;font-size:13px}
+.tip{background:#f2fbf7;border:1px solid #d7f2e6;color:#197a56;padding:13px;border-radius:14px;font-size:13px;line-height:1.5}
+.reminder{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px;background:#fff9ed;border:1px solid #fde9bc;border-radius:15px}.switch{position:relative;width:48px;height:27px}.switch input{display:none}.slider{position:absolute;inset:0;background:#d8dce5;border-radius:99px}.slider:before{content:"";position:absolute;width:21px;height:21px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}.switch input:checked+.slider{background:var(--green)}.switch input:checked+.slider:before{transform:translateX(21px)}
+.footer{text-align:center;color:var(--muted);font-size:12px;padding:28px 0}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;place-items:center;padding:20px;z-index:20}.modal.show{display:grid}.modal-box{background:#fff;width:min(460px,100%);border-radius:22px;padding:22px;box-shadow:0 25px 80px rgba(0,0,0,.2)}.modal-head{display:flex;justify-content:space-between;align-items:center}.close{background:#f1f3f7;border-radius:10px;padding:7px 10px}
+@media(max-width:850px){.col-8,.col-4,.col-6{grid-column:span 12}.hero-row{align-items:start;flex-direction:column}.total{margin-top:18px}}
+@media(max-width:520px){.app{padding:13px}.hero{padding:22px;border-radius:22px}.alloc{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}.nav{margin-bottom:15px}.card{padding:16px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="nav">
+    <div class="brand"><div class="logo">₿</div><span>JajanFlow</span></div>
+    <div class="nav-actions">
+      <div class="account"><span class="account-name" id="accountName"></span><button class="danger" id="logoutBtn" hidden>Keluar</button></div>
+      <button class="icon-btn" id="resetBtn" title="Reset semua data">↻</button>
+      <button class="secondary" id="settingsBtn">⚙ Pengaturan</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-row">
+      <div>
+        <small id="weekLabel">Minggu ini</small>
+        <h1>Uangmu, lebih terarah.</h1>
+        <p>Atur uang jajan mingguan dengan pembagian sederhana: kebutuhan, tabungan, transportasi, dan jajan. Semua tersimpan di browser kamu.</p>
+        <div class="total" id="remaining">Rp200.000 <span>sisa budget</span></div>
+      </div>
+      <button class="primary" id="addQuick">＋ Catat pengeluaran</button>
+    </div>
+  </section>
+
+  <main class="grid">
+    <section class="card col-8">
+      <div class="card-title"><div><h2>Budget mingguan</h2><span class="muted">Pembagian otomatis dari budget utama</span></div></div>
+      <div class="bars" id="budgetBars"></div>
+    </section>
+
+    <section class="card col-4">
+      <div class="card-title"><h2>Ringkasan</h2></div>
+      <div class="alloc" id="summary"></div>
+    </section>
+
+    <section class="card col-6">
+      <div class="card-title"><div><h2>Target impian 🎯</h2><span class="muted">Tabungan untuk sesuatu yang kamu mau</span></div><button class="ghost" id="goalBtn">Edit</button></div>
+      <div id="goalBox"></div>
+    </section>
+
+    <section class="card col-6">
+      <div class="card-title"><div><h2>Pengingat nabung 🔔</h2><span class="muted">Satu kali setiap minggu</span></div></div>
+      <div class="reminder">
+        <div><b>Ingat sisihkan uang</b><div class="muted" id="reminderText">Pengingat aktif setiap Senin</div></div>
+        <label class="switch"><input type="checkbox" id="reminderToggle"><span class="slider"></span></label>
+      </div>
+      <div style="height:10px"></div>
+      <div class="tip">💡 Tips: anggap uang tabungan sebagai “uang yang sudah pergi”, bukan uang yang masih boleh dipakai.</div>
+    </section>
+
+    <section class="card col-8">
+      <div class="card-title"><div><h2>Aktivitas terbaru</h2><span class="muted">Pengeluaran & pemasukan yang kamu catat</span></div><button class="secondary" id="addBtn">＋ Tambah</button></div>
+      <div id="transactions"></div>
+    </section>
+
+    <section class="card col-4">
+      <div class="card-title"><div><h2>Quick insight</h2></div></div>
+      <div id="insight" class="tip"></div>
+      <div style="height:12px"></div>
+      <button class="secondary" style="width:100%" id="exportBtn">⇩ Export data JSON</button>
+    </section>
+  </main>
+  <div class="footer">JajanFlow • data tersimpan lokal di perangkatmu • dibuat untuk budgeting mingguan sederhana</div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-head"><h2 id="modalTitle">Catat transaksi</h2><button class="close" id="closeModal">✕</button></div>
+    <form id="txForm" style="margin-top:16px">
+      <div class="row">
+        <label>Jenis<select id="txType"><option value="expense">Pengeluaran</option><option value="income">Pemasukan</option></select></label>
+        <label>Kategori<select id="txCategory"><option>Kebutuhan</option><option>Tabungan</option><option>Transportasi</option><option>Jajan / Makan</option><option>Lainnya</option></select></label>
+      </div>
+      <label>Nominal (Rp)<input id="txAmount" type="number" min="1000" step="1000" placeholder="Contoh: 10000" required></label>
+      <label>Catatan<input id="txNote" maxlength="60" placeholder="Contoh: nasi + es teh"></label>
+      <button class="primary" type="submit">Simpan transaksi</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="authModal">
+  <div class="modal-box">
+    <div class="modal-head"><h2 id="authTitle">Masuk ke JajanFlow</h2></div>
+    <p class="muted" id="authSubtitle">Gunakan username dan password untuk memuat data tabunganmu.</p>
+    <form id="authForm" style="margin-top:16px">
+      <label>Username<input id="authUsername" autocomplete="username" minlength="3" maxlength="30" pattern="[A-Za-z0-9_.-]+" required></label>
+      <label>Password<input id="authPassword" type="password" autocomplete="current-password" minlength="6" required></label>
+      <button class="primary" type="submit" id="authSubmit">Masuk</button>
+      <button class="secondary" type="button" id="authSwitch">Belum punya akun? Daftar</button>
+      <div class="muted" id="authMessage" role="status"></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="goalModal">
+  <div class="modal-box">
+    <div class="modal-head"><h2>Atur target</h2><button class="close" id="closeGoal">✕</button></div>
+    <form id="goalForm" style="margin-top:16px">
+      <label>Mau beli apa?<input id="goalName" maxlength="40" placeholder="Contoh: headset baru" required></label>
+      <label>Target harga (Rp)<input id="goalTarget" type="number" min="1000" step="1000" placeholder="500000" required></label>
+      <button class="primary">Simpan target</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="settingsModal">
+  <div class="modal-box">
+    <div class="modal-head"><h2>Pengaturan budget</h2><button class="close" id="closeSettings">✕</button></div>
+    <form id="settingsForm" style="margin-top:16px">
+      <label>Budget mingguan (Rp)<input id="budgetInput" type="number" min="0" step="5000" required></label>
+      <div class="row">
+        <label>Kebutuhan %<input id="needPct" type="number" min="0" max="100" step="1"></label>
+        <label>Tabungan %<input id="savePct" type="number" min="0" max="100" step="1"></label>
+      </div>
+      <div class="row">
+        <label>Transportasi %<input id="transportPct" type="number" min="0" max="100" step="1"></label>
+        <label>Jajan %<input id="foodPct" type="number" min="0" max="100" step="1"></label>
+      </div>
+      <div class="muted" id="pctTotal"></div>
+      <button class="primary">Simpan pengaturan</button>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const KEY="jajanflow_v1";
+const SUPABASE_URL="PASTE_SUPABASE_URL_HERE";
+const SUPABASE_ANON_KEY="PASTE_SUPABASE_ANON_KEY_HERE";
+const cloudEnabled=SUPABASE_URL.startsWith("https://")&&SUPABASE_ANON_KEY.length>20;
+const cloud=cloudEnabled?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
+const defaultState={
+  budget:200000,
+  pct:{need:.50,save:.20,transport:.15,food:.15},
+  transactions:[],
+  goal:{name:"Tabungan impian",target:500000},
+  reminder:true,
+  lastReminder:""
+};
+let state=structuredClone(defaultState), currentUser=null, authMode="login";
+const rp=n=>new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(n);
+const save=()=>{localStorage.setItem(KEY,JSON.stringify(state));if(cloud&&currentUser)cloud.from("user_states").upsert({user_id:currentUser.id,state,updated_at:new Date().toISOString()},{onConflict:"user_id"})};
+const qs=s=>document.querySelector(s);
+function allocation(){return {
+  "Kebutuhan":state.budget*state.pct.need,
+  "Tabungan":state.budget*state.pct.save,
+  "Transportasi":state.budget*state.pct.transport,
+  "Jajan / Makan":state.budget*state.pct.food
+}}
+function spent(cat){return state.transactions.filter(t=>t.type==="expense"&&t.category===cat).reduce((a,t)=>a+t.amount,0)}
+function totalSpent(){return state.transactions.filter(t=>t.type==="expense").reduce((a,t)=>a+t.amount,0)}
+function totalIncome(){return state.transactions.filter(t=>t.type==="income").reduce((a,t)=>a+t.amount,0)}
+function savedMoney(){return spent("Tabungan")+state.transactions.filter(t=>t.type==="income"&&t.category==="Tabungan").reduce((a,t)=>a+t.amount,0)}
+function fmtDate(d){return new Date(d).toLocaleDateString("id-ID",{day:"2-digit",month:"short"})}
+function render(){
+  qs("#weekLabel").textContent="Minggu "+getWeekRange();
+  qs("#remaining").innerHTML=rp(state.budget-totalSpent()+totalIncome())+' <span>sisa budget</span>';
+  const a=allocation();
+  qs("#budgetBars").innerHTML=Object.entries(a).map(([k,v])=>{
+    const used=spent(k), p=Math.min(100,(used/v)*100||0);
+    return `<div><div class="bar-head"><span><b>${k}</b></span><span>${rp(used)} / ${rp(v)}</span></div><div class="bar"><div class="fill" style="width:${p}%"></div></div></div>`
+  }).join("");
+  qs("#summary").innerHTML=Object.entries(a).map(([k,v])=>`<div class="alloc-item"><span class="muted">${k}</span><b>${rp(v)}</b></div>`).join("");
+  const target=state.goal.target||1, progress=Math.min(100,(savedMoney()/target)*100);
+  qs("#goalBox").innerHTML=`<div class="goal"><div class="goal-ring" style="--p:${progress}%" data-p="${Math.round(progress)}%"></div><div><h3>${escapeHtml(state.goal.name)}</h3><p>${rp(savedMoney())} terkumpul dari ${rp(target)}</p><div class="muted" style="margin-top:6px">${progress>=100?"🎉 Target tercapai!":"Kurang "+rp(Math.max(0,target-savedMoney()))}</div></div></div>`;
+  qs("#transactions").innerHTML=state.transactions.length?state.transactions.slice().reverse().slice(0,8).map((t,i)=>`<div class="transaction"><div class="tx-left"><div class="tx-icon">${t.type==="income"?"＋":"−"}</div><div><div class="tx-name">${escapeHtml(t.note||t.category)}</div><div class="tx-date">${escapeHtml(t.category)} • ${fmtDate(t.date)}</div></div></div><div><span class="amount ${t.type==="income"?"income":"expense"}">${t.type==="income"?"+":"−"}${rp(t.amount)}</span><button class="ghost" style="margin-left:8px;padding:5px 8px" onclick="deleteTx(${state.transactions.indexOf(t)})">✕</button></div></div>`).join(""):`<div class="empty">Belum ada transaksi. Yuk catat pengeluaran pertamamu ✨</div>`;
+  const remaining=state.budget-totalSpent()+totalIncome();
+  let msg=remaining<state.budget*.25?"⚠️ Sisa budget mulai menipis. Coba tahan pengeluaran non-prioritas.":savedMoney()>0?`🌱 Mantap! Kamu sudah menyisihkan ${rp(savedMoney())} untuk target.`:"💡 Mulai dengan mencatat semua pengeluaran, sekecil apa pun.";
+  qs("#insight").innerHTML=msg;
+  qs("#reminderToggle").checked=state.reminder;
+  qs("#reminderText").textContent=state.reminder?"Pengingat aktif setiap Senin":"Pengingat sedang dimatikan";
+}
+function getWeekRange(){
+ const d=new Date(), day=d.getDay()||7, mon=new Date(d); mon.setDate(d.getDate()-day+1);
+ const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+ return `${mon.toLocaleDateString("id-ID",{day:"numeric",month:"short"})}–${sun.toLocaleDateString("id-ID",{day:"numeric",month:"short"})}`;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function openModal(id){qs(id).classList.add("show")}
+function closeModal(id){qs(id).classList.remove("show")}
+function showAuth(message=""){qs("#authMessage").textContent=message;openModal("#authModal")}
+function setAuthMode(mode){authMode=mode;const registering=mode==="signup";qs("#authTitle").textContent=registering?"Buat akun JajanFlow":"Masuk ke JajanFlow";qs("#authSubtitle").textContent=registering?"Data tabunganmu akan tersimpan online di akun ini.":"Gunakan username dan password untuk memuat data tabunganmu.";qs("#authSubmit").textContent=registering?"Daftar":"Masuk";qs("#authSwitch").textContent=registering?"Sudah punya akun? Masuk":"Belum punya akun? Daftar";qs("#authPassword").autocomplete=registering?"new-password":"current-password";qs("#authMessage").textContent=""}
+async function loadCloudState(){
+  const {data,error}=await cloud.from("user_states").select("state").eq("user_id",currentUser.id).maybeSingle();
+  if(error){showAuth("Database belum siap. Jalankan SQL setup di README.");return}
+  if(data?.state){state={...structuredClone(defaultState),...data.state};localStorage.setItem(KEY,JSON.stringify(state))}
+  else {const cached=JSON.parse(localStorage.getItem(KEY)||"null");if(cached)state=cached;await save()}
+}
+async function handleAuth(e){
+  e.preventDefault();
+  if(!cloud){qs("#authMessage").textContent="Isi SUPABASE_URL dan SUPABASE_ANON_KEY di bagian konfigurasi terlebih dahulu.";return}
+  const username=qs("#authUsername").value.trim().toLowerCase(), password=qs("#authPassword").value;
+  const email=username+"@jajanflow.local";
+  qs("#authSubmit").disabled=true;qs("#authMessage").textContent="Memproses...";
+  const result=authMode==="signup"?await cloud.auth.signUp({email,password}):await cloud.auth.signInWithPassword({email,password});
+  qs("#authSubmit").disabled=false;
+  if(result.error){qs("#authMessage").textContent=result.error.message;return}
+  if(authMode==="signup"&&!result.data.session){qs("#authMessage").textContent="Akun dibuat. Matikan email confirmation di Supabase agar login username langsung aktif."}
+}
+qs("#addBtn").onclick=()=>openModal("#modal"); qs("#addQuick").onclick=()=>openModal("#modal"); qs("#closeModal").onclick=()=>closeModal("#modal");
+qs("#authForm").onsubmit=handleAuth;qs("#authSwitch").onclick=()=>setAuthMode(authMode==="login"?"signup":"login");
+qs("#logoutBtn").onclick=async()=>{await cloud?.auth.signOut();currentUser=null;qs("#accountName").textContent="";qs("#logoutBtn").hidden=true;showAuth()};
+qs("#goalBtn").onclick=()=>{qs("#goalName").value=state.goal.name;qs("#goalTarget").value=state.goal.target;openModal("#goalModal")};
+qs("#closeGoal").onclick=()=>closeModal("#goalModal");
+qs("#settingsBtn").onclick=()=>{qs("#budgetInput").value=state.budget;qs("#needPct").value=state.pct.need*100;qs("#savePct").value=state.pct.save*100;qs("#transportPct").value=state.pct.transport*100;qs("#foodPct").value=state.pct.food*100;updatePct();openModal("#settingsModal")};
+qs("#closeSettings").onclick=()=>closeModal("#settingsModal");
+document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m&&m.id!=="authModal")m.classList.remove("show")}));
+qs("#txForm").onsubmit=e=>{e.preventDefault();state.transactions.push({type:qs("#txType").value,category:qs("#txCategory").value,amount:Number(qs("#txAmount").value),note:qs("#txNote").value.trim(),date:new Date().toISOString()});save();e.target.reset();closeModal("#modal");render()};
+qs("#goalForm").onsubmit=e=>{e.preventDefault();state.goal={name:qs("#goalName").value.trim(),target:Number(qs("#goalTarget").value)};save();closeModal("#goalModal");render()};
+function updatePct(){const t=["#needPct","#savePct","#transportPct","#foodPct"].reduce((a,s)=>a+Number(qs(s).value||0),0);qs("#pctTotal").textContent="Total persentase: "+t+"% "+(t===100?"✓":"(harus 100%)")}
+["#needPct","#savePct","#transportPct","#foodPct"].forEach(s=>qs(s).addEventListener("input",updatePct));
+qs("#settingsForm").onsubmit=e=>{e.preventDefault();const p=[qs("#needPct"),qs("#savePct"),qs("#transportPct"),qs("#foodPct")].map(x=>Number(x.value));if(p.reduce((a,b)=>a+b,0)!==100){alert("Total persentase harus tepat 100%.");return}state.budget=Number(qs("#budgetInput").value);state.pct={need:p[0]/100,save:p[1]/100,transport:p[2]/100,food:p[3]/100};save();closeModal("#settingsModal");render()};
+qs("#reminderToggle").onchange=async e=>{state.reminder=e.target.checked;save();if(state.reminder&&"Notification"in window){if(Notification.permission==="default")await Notification.requestPermission();}render()};
+qs("#exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="jajanflow-data.json";a.click();URL.revokeObjectURL(a.href)};
+qs("#resetBtn").onclick=()=>{if(confirm("Reset semua transaksi, target, dan pengaturan?")){state=structuredClone(defaultState);save();render()}};
+function deleteTx(i){if(confirm("Hapus transaksi ini?")){state.transactions.splice(i,1);save();render()}}
+function weeklyReminder(){
+ const now=new Date(), key=`${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+ if(state.reminder && now.getDay()===1 && state.lastReminder!==key){
+   state.lastReminder=key;save();
+   if("Notification"in window && Notification.permission==="granted") new Notification("JajanFlow 🔔",{body:`Saatnya sisihkan ${rp(allocation()["Tabungan"])} untuk tabungan minggu ini.`});
+ }
+}
+async function initialize(){
+  if(!cloud){setAuthMode("login");showAuth("Konfigurasi Supabase belum diisi. Ikuti langkah di README.");render();return}
+  const {data}=await cloud.auth.getSession();
+  currentUser=data.session?.user||null;
+  if(currentUser){qs("#accountName").textContent=currentUser.email.split("@")[0];qs("#logoutBtn").hidden=false;await loadCloudState();closeModal("#authModal");render();weeklyReminder()}
+  else {setAuthMode("login");showAuth();render()}
+  cloud.auth.onAuthStateChange(async(_,session)=>{if(session?.user&&!currentUser){currentUser=session.user;qs("#accountName").textContent=currentUser.email.split("@")[0];qs("#logoutBtn").hidden=false;await loadCloudState();closeModal("#authModal");render();weeklyReminder()}});
+}
+initialize();
+</script>
+</body>
+</html>
